@@ -4,8 +4,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const error = require('./controllers/error');
-const Product = require('./models/product');
-const User = require('./models/user');
 
 const app = express();
 
@@ -14,19 +12,21 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
-const sequelize = require('./util/database');
-const { equal } = require('assert');
+const mongoConnect = require('./util/database').mongoConnect;
+const User = require('./models/user')
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-  User.findByPk(17)
+  User.findById("63b07f6b7f350b1c214fc7f5")
     .then((user) => {
       req.user = user;
       next();
     })
     .catch((err) => console.log(err));
+
+  next();
 });
 
 app.use('/admin', adminRoutes);
@@ -34,25 +34,7 @@ app.use(shopRoutes);
 
 app.use(error.get404);
 
-Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
-User.hasMany(Product);
-
-sequelize
-  .sync()
-  .then((result) => {
-    return User.findByPk(17);
-    // console.log(result)
-  })
-  .then((user) => {
-    if (!user) {
-      return User.create({ name: 'Fred', email: 'test@test.com' });
-    }
-    return user;
-  })
-  .then((user) => {
-    // console.log(user);
-    app.listen(4000);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+mongoConnect(() => {
+  if()
+  app.listen(4000);
+});
