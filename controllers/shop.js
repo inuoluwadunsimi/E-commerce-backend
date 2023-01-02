@@ -41,19 +41,16 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  console.log(req.user);
   req.user
     .getCart()
     .then((products) => {
       res.render('shop/cart', {
-        products: products,
-        pageTitle: 'Your Cart',
         path: '/cart',
+        pageTitle: 'Your Cart',
+        products: products,
       });
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => console.log(err));
 };
 
 exports.postCart = (req, res, next) => {
