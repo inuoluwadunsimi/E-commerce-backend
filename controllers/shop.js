@@ -61,15 +61,18 @@ exports.postCart = (req, res, next) => {
     })
     .then((result) => {
       console.log(result);
+      res.redirect('/cart');
     });
 };
 
 exports.postCartDelete = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId, (product) => {
-    Cart.deleteProduct(prodId, product.price);
-    res.redirect('/cart');
-  });
+  req.user
+    .deleteCartItem(prodId)
+    .then((result) => {
+      res.redirect('/cart');
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getCheckout = (res, req, next) => {
@@ -80,8 +83,22 @@ exports.getCheckout = (res, req, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    pageTitle: 'Orders',
-    path: '/orders',
-  });
+  req.user.getOrders().then((orders) => {
+    res.render('shop/orders', {
+      orders:orders,
+      pageTitle: 'Orders',
+      path: '/orders',
+    });
+  }).catch(err=>{console.log(err)})
+};
+
+exports.postOrder = (req, res, next) => {
+  req.user
+    .addOrder()
+    .then((result) => {
+      res.redirect('/orders');
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
