@@ -130,3 +130,23 @@ class User {
   }
 }
 module.exports = User;
+
+
+const mongoose  = require('mongoose')
+
+const student = new mongoose.Schema({
+  userName:{
+    type: String,
+    required:true,
+    unique:true,
+  },
+  email:{
+    type:String,
+    required:true,
+
+  },
+  cart:{
+    type: mongoose.Schema.Types.ObjectId
+  }
+
+})

@@ -2,6 +2,7 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const error = require('./controllers/error');
 
@@ -32,6 +33,12 @@ app.use(shopRoutes);
 
 app.use(error.get404);
 
-mongoConnect(() => {
-  app.listen(4000);
-});
+mongoose
+  .connect(
+    'mongodb+srv://Inuoluwadunsimi:Thesaneman12_@human.a4aprmo.mongodb.net/shop'
+  )
+  .then((result) => {
+    app.listen(3000)
+  }).catch(err=>{
+    console.log(err)
+  })
