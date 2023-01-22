@@ -49,7 +49,14 @@ user.methods.addToCart = function (product) {
   return this.save();
 };
 
+user.methods.deleteCartItem = function (productId) {
+  const updatedCartItems = this.cart.items.filter((item) => {
+    return item._id.toString() !== productId.toString();
+  });
 
+  this.cart.items = updatedCartItems;
+  return this.save();
+};
 
 module.exports = mongoose.model('User', user);
 
