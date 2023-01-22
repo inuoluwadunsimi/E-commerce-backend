@@ -18,10 +18,10 @@ const product = new mongoose.Schema({
     required: false,
     default: 'https://unsplash.com/photos/H2CSTaboiy0',
   },
-  // user:{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref:'user'
-  // }
+  userId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'User'
+  }
 });
 
 module.exports = mongoose.model('Product', product);
