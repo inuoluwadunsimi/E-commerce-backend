@@ -30,6 +30,11 @@
             <li class="main-header__item">
                 <a class="<%= path === '/login' ? 'active' : '' %>"  href="/login">Login</a>
             </li>
+            <li>
+              <form action="/logout">
+                <button type="submit">logout</button>
+              </form>
+            </li>
         </ul>
     </nav>
 </header>
