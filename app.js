@@ -3,12 +3,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const sessionStore = require('connect-mongodb-session')(session);
 
 require('dotenv').config();
 
 const error = require('./controllers/error');
 
 const app = express();
+const store = new sessionStore({
+  uri: process.env.MONGO_URI,
+  // databaseName:'shop',
+  collection: 'sessions',
+});
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -25,6 +31,7 @@ app.use(
     secret: 'SECRET',
     resave: false,
     saveUninitialized: false,
+    store: store,
   })
 );
 
