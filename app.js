@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const session = require('express-session');
 
 require('dotenv').config();
 
@@ -14,12 +15,18 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
-const authRoutes = require('./routes/auth')
+const authRoutes = require('./routes/auth');
 const User = require('./models/user');
-
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  session({
+    secret: 'SECRET',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 app.use((req, res, next) => {
   User.findById('63cc89e4cd7031b8c720687d')
@@ -32,14 +39,12 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
-app.use(authRoutes)
+app.use(authRoutes);
 
 app.use(error.get404);
 
 mongoose
-  .connect(
-    process.env.MONGO_URI
-  )
+  .connect(process.env.MONGO_URI)
   .then((result) => {
     // console.log(result,'connected successfully')
     const user = new User({
