@@ -56,17 +56,6 @@ app.use(error.get404);
 mongoose
   .connect(process.env.MONGO_URI)
   .then((result) => {
-    // console.log(result,'connected successfully')
-    const user = new User({
-      userName: 'Boy',
-      email: 'boy@test.com',
-      cart: {
-        items: [],
-      },
-    });
-    if (!user) {
-      user.save();
-    }
     app.listen(3000);
   })
   .catch((err) => {
