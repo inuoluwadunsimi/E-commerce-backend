@@ -8,6 +8,8 @@ exports.getLogin = (req, res, next) => {
     pageTitle: 'Login',
     path: '/login',
     isAuthenticated: false,
+    csrfToken:req.csrfToken()
+
   });
 };
 
@@ -79,5 +81,7 @@ exports.getSignup = (req, res, next) => {
     pageTitle: 'Signup',
     path: '/signup',
     isAuthenticated: false,
+    csrfToken:req.csrfToken()
+
   });
 };

@@ -23,6 +23,7 @@ exports.getIndex = (req, res, next) => {
         pageTitle: 'Shop',
         path: '/',
         isAuthenticated: req.session.isLoggedIn,
+        csrfToken:req.csrfToken()
       });
     })
     .catch((err) => console.log(err));
@@ -37,6 +38,8 @@ exports.getProduct = (req, res, next) => {
         pageTitle: product.title,
         path: '/products',
         isAuthenticated: req.session.isLoggedIn,
+        csrfToken:req.csrfToken()
+
       });
     })
     .catch((err) => {
@@ -54,6 +57,8 @@ exports.getCart = (req, res, next) => {
         pageTitle: 'Your Cart',
         products: products,
         isAuthenticated: req.session.isLoggedIn,
+        csrfToken:req.csrfToken()
+
       });
     })
     .catch((err) => console.log(err));
@@ -86,6 +91,8 @@ exports.getCheckout = (res, req, next) => {
     pageTitle: 'Checkout Page',
     path: '/checkout',
     isAuthenticated: req.session.isLoggedIn,
+    csrfToken:req.csrfToken()
+
   });
 };
 
@@ -97,6 +104,8 @@ exports.getOrders = (req, res, next) => {
         pageTitle: 'Orders',
         path: '/orders',
         isAuthenticated: req.session.isLoggedIn,
+        csrfToken:req.csrfToken()
+
       });
     })
     .catch((err) => {

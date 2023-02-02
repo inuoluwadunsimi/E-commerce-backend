@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const sessionStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf')
 
 require('dotenv').config();
 
@@ -15,6 +16,8 @@ const store = new sessionStore({
   // databaseName:'shop',
   collection: 'sessions',
 });
+
+const csrfProtection = csrf()
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -35,6 +38,9 @@ app.use(
   })
 );
 
+app.use(csrfProtection)
+
+
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -46,6 +52,12 @@ app.use((req, res, next) => {
     })
     .catch((err) => console.log(err));
 });
+
+app.use((req,res,next)=>{
+  res.locals.isAuthenticated = req.session.isLoggedIn
+  res.locals.csrfToken = req.csrfToken()
+  next()
+})
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
