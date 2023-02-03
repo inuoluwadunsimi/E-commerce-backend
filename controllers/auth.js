@@ -2,6 +2,7 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const sendGrid = require('nodemailer-sendgrid-transport');
+const crypto = require('crypto');
 require('dotenv').config();
 
 //using sendgrid
@@ -141,6 +142,38 @@ exports.getReset = (req, res, next) => {
   });
 };
 
-exports.postReset=(req,res,next) =>{
-    
-}
+exports.postReset = (req, res, next) => {
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) {
+      console.log(err);
+      return res.redirect('/reset');
+    }
+    const token = buffer.toString('hex');
+    User.findOne({ email: req.body.email })
+      .then((user) => {
+        if (!user) {
+          req.flash('error', 'This user does not exist');
+          return res.redirect('/reset');
+        }
+        user.resetToken = token;
+        user.tokenExpiration = Date.now() + 3600000;
+        return user.save();
+      })
+      .then((result) => {
+        res.redirect('/')
+        return transporter.sendMail({
+          to: req.body.email,
+          from: 'danielolaoladeinde@gmail.com',
+          subject: 'reset passoword OTP ',
+          html: `
+          <p>You requested a passoword reset </p>
+          <p>Click this <a href="http://localhost:3000/reset/${token}" link </a>  to reset your password</p>
+          
+          `,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+};
