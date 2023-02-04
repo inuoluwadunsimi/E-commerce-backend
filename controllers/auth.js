@@ -160,7 +160,7 @@ exports.postReset = (req, res, next) => {
         return user.save();
       })
       .then((result) => {
-        res.redirect('/')
+        res.redirect('/');
         return transporter.sendMail({
           to: req.body.email,
           from: 'danielolaoladeinde@gmail.com',
@@ -177,3 +177,30 @@ exports.postReset = (req, res, next) => {
       });
   });
 };
+
+exports.getNewPassword = (req, res, next) => {
+  const token = req.params.token;
+  User.findOne({
+    resetToken: token,
+    resetTokenExpiration: { $gt: Date.now() },
+  })
+    .then((user) => {
+      let message = req.flash('error');
+      if (message.length > 0) {
+        message = message[0];
+      } else {
+        message = null;
+      }
+      res.render('auth/new-password', {
+        pageTitle: 'Password reset',
+        path: '/new-password',
+        errorMessage: message,
+        userId:user._id.toString()
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+exports.postNewPassword = (req, res, next) => {};
