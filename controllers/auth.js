@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const sendGrid = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
+const { validationResult } = require('express-validator/check');
 require('dotenv').config();
 
 //using sendgrid
@@ -74,6 +75,15 @@ exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors.array())
+    return res.status(422).render('auth/signup', {
+        pageTitle: 'Signup',
+        path: '/signup',
+        errorMessage: errors.array()[0].msg
+      });
+  }
 
   User.findOne({ email: email })
     .then((user) => {
@@ -195,7 +205,8 @@ exports.getNewPassword = (req, res, next) => {
         pageTitle: 'Password reset',
         path: '/new-password',
         errorMessage: message,
-        userId:user._id.toString()
+        userId: user._id.toString(),
+        passwordToken: token,
       });
     })
     .catch((err) => {
@@ -203,4 +214,38 @@ exports.getNewPassword = (req, res, next) => {
     });
 };
 
-exports.postNewPassword = (req, res, next) => {};
+exports.postNewPassword = (req, res, next) => {
+  const newPassword = req.body.password;
+  const userId = req.body.userId;
+  const passwordToken = req.body.passwordToken;
+  let resetUser;
+
+  User.findOne({
+    resetToken: passwordToken,
+    // tokenExpiration: { $gt: tokenExpiration + 3600000 },
+    _id: userId,
+  })
+    .then((user) => {
+      resetUser = user;
+      return bcrypt.hash(newPassword, 12);
+    })
+    .then((hashedPassowrd) => {
+      console.log(resetUser);
+      resetUser.password = hashedPassowrd;
+      resetUser.resetToken = undefined;
+      resetUser.tokenExpiration = undefined;
+      return resetUser.save();
+    })
+    .then((result) => {
+      res.redirect('/login');
+      return transporter.sendMail({
+        to: resetUser.email,
+        from: 'danielolaoladeinde@gmail.com',
+        subject: 'password reset successful',
+        html: '<h1> Your password has been successfully reset</h1>',
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};

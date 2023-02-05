@@ -2,15 +2,14 @@ const Product = require('../models/product');
 const mongodb = require('mongodb');
 
 exports.getAddProduct = (req, res, next) => {
-  if(!req.session.isLoggedIn){
-    return res.redirect('/login')
+  if (!req.session.isLoggedIn) {
+    return res.redirect('/login');
   }
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editing: false,
     isAuthenticated: req.session.isLoggedIn,
-
   });
 };
 
@@ -24,8 +23,7 @@ exports.postAddProduct = (req, res, next) => {
     price: price,
     description: description,
     imageUrl: imageUrl,
-    userId:req.user,
-    
+    userId: req.user,
   });
 
   product
@@ -56,7 +54,6 @@ exports.getEditProduct = (req, res, next) => {
         editing: editMode,
         product: product,
         isAuthenticated: req.session.isLoggedIn,
-
       });
     })
     .catch((err) => {
@@ -87,7 +84,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getAdminProducts = (req, res, next) => {
-  Product.find()
+  Product.find({ userId: req.user._id })
     .then((products) => {
       console.log(products);
       res.render('admin/products', {
@@ -95,7 +92,6 @@ exports.getAdminProducts = (req, res, next) => {
         path: '/admin/products',
         pageTitle: 'Admin Products',
         isAuthenticated: req.session.isLoggedIn,
-
       });
     })
     .catch((err) => {
@@ -105,7 +101,7 @@ exports.getAdminProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findByIdAndDelete(prodId)
+  Product.deleteOne({ _id: prodId, userId: req.user._id })
     .then(() => {
       console.log('Deleted');
       res.redirect('/admin/products');
@@ -114,4 +110,3 @@ exports.postDeleteProduct = (req, res, next) => {
       console.log(err);
     });
 };
-
