@@ -36,6 +36,15 @@ exports.getLogin = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/login', {
+      pageTitle: 'login',
+      path: '/login',
+      errorMessage: errors.array()[0].msg,
+    });
+  }
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
@@ -74,31 +83,32 @@ exports.postLogout = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(errors.array())
+    console.log(errors.array());
     return res.status(422).render('auth/signup', {
-        pageTitle: 'Signup',
-        path: '/signup',
-        errorMessage: errors.array()[0].msg
-      });
+      pageTitle: 'Signup',
+      path: '/signup',
+      errorMessage: errors.array()[0].msg,
+      oldInput: {
+        email: email,
+        password: password,
+        confirmPasword: req.body.confirmPasword,
+      },
+      validationErrors: errors.array(),
+
+    });
   }
 
-  User.findOne({ email: email })
-    .then((user) => {
-      if (user) {
-        req.flash('error', 'Email already exists,kindly input another');
-        return res.redirect('/login');
-      }
-      return bcrypt.hash(password, 12).then((hashedPassowrd) => {
-        const user = new User({
-          email: email,
-          password: hashedPassowrd,
-          cart: { items: [] },
-        });
-        return user.save();
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPassowrd) => {
+      const user = new User({
+        email: email,
+        password: hashedPassowrd,
+        cart: { items: [] },
       });
+      return user.save();
     })
     .then((result) => {
       res.redirect('/login');
@@ -135,6 +145,12 @@ exports.getSignup = (req, res, next) => {
     pageTitle: 'Signup',
     path: '/signup',
     errorMessage: message,
+    oldInput: {
+      email: '',
+      password: '',
+      confirmPasword: '',
+    },
+    validationErrors: []
   });
 };
 

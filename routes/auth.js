@@ -1,12 +1,23 @@
 const express = require('express');
 const authController = require('../controllers/auth');
-const { check } = require('express-validator/check');
+const User = require('../models/user');
+const { check, body } = require('express-validator/check');
 
 const router = express.Router();
 
 router.get('/login', authController.getLogin);
 
-router.post('/login', authController.postLogin);
+router.post(
+  '/login',
+  [body('email')
+  .isEmail()
+  .withMessage('Please enter a valid email address'),
+  body('password')
+  .isLength({min:5})
+  .isAlphanumeric()
+],
+  authController.postLogin
+);
 
 router.post('/logout', authController.postLogout);
 
@@ -14,10 +25,34 @@ router.get('/signup', authController.getSignup);
 
 router.post(
   '/signup',
-  check('email').
-  isEmail().
-  withMessage('Please enter a valid email address')
-  .custom((value)=>{}),
+  [
+    check('email')
+      .isEmail()
+      .withMessage('Please enter a valid email address')
+      .custom((value, { req }) => {
+        // if (value === 'test@test.com') {
+        //   throw new Error('This email address is forbidden');
+        // }
+        // return true;
+        return User.findOne({ email: value }).then((user) => {
+          if (user) {
+            return Promise.reject('E-mail already exists, pick a differen one');
+          }
+        });
+      }),
+    body(
+      'password',
+      'Please enter a passowrd with only number and text and at least 5 characters'
+    )
+      .isLength({ min: 5 })
+      .isAlphanumeric(),
+    body('confirmPassword').custom((value, { req }) => {
+      if (value !== req.body.Password) {
+        throw new Error('Password have to match!');
+      }
+      return true;
+    }),
+  ],
   authController.postSignup
 );
 

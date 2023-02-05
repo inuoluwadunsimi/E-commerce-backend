@@ -8,7 +8,7 @@ const order = new mongoose.Schema({
     },
   ],
   user: {
-    email: {
+    name: {
       type: String,
       required: true,
     },
