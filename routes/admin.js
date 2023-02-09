@@ -1,5 +1,5 @@
 const path = require('path');
-const { body } = require('express-validator/check');
+const { body } = require('express-validator');
 
 const express = require('express');
 
@@ -18,7 +18,6 @@ router.post(
   '/add-product',
   [
     body('title').isString().isLength({ min: 4 }).trim(),
-    body('imageUrl').isURL(),
     body('price').isFloat(),
     body('description').isLength({ min: 10, max: 400 }).trim(),
   ],

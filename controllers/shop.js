@@ -12,7 +12,11 @@ exports.getProducts = (req, res, next) => {
         isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getIndex = (req, res, next) => {
@@ -23,10 +27,14 @@ exports.getIndex = (req, res, next) => {
         pageTitle: 'Shop',
         path: '/',
         isAuthenticated: req.session.isLoggedIn,
-        csrfToken:req.csrfToken()
+        csrfToken: req.csrfToken(),
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getProduct = (req, res, next) => {
@@ -38,12 +46,13 @@ exports.getProduct = (req, res, next) => {
         pageTitle: product.title,
         path: '/products',
         isAuthenticated: req.session.isLoggedIn,
-        csrfToken:req.csrfToken()
-
+        csrfToken: req.csrfToken(),
       });
     })
     .catch((err) => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -57,11 +66,14 @@ exports.getCart = (req, res, next) => {
         pageTitle: 'Your Cart',
         products: products,
         isAuthenticated: req.session.isLoggedIn,
-        csrfToken:req.csrfToken()
-
+        csrfToken: req.csrfToken(),
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postCart = (req, res, next) => {
@@ -83,7 +95,11 @@ exports.postCartDelete = (req, res, next) => {
     .then((result) => {
       res.redirect('/cart');
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getCheckout = (res, req, next) => {
@@ -91,8 +107,7 @@ exports.getCheckout = (res, req, next) => {
     pageTitle: 'Checkout Page',
     path: '/checkout',
     isAuthenticated: req.session.isLoggedIn,
-    csrfToken:req.csrfToken()
-
+    csrfToken: req.csrfToken(),
   });
 };
 
@@ -104,12 +119,13 @@ exports.getOrders = (req, res, next) => {
         pageTitle: 'Orders',
         path: '/orders',
         isAuthenticated: req.session.isLoggedIn,
-        csrfToken:req.csrfToken()
-
+        csrfToken: req.csrfToken(),
       });
     })
     .catch((err) => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -137,6 +153,8 @@ exports.postOrder = (req, res, next) => {
       res.redirect('/orders');
     })
     .catch((err) => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
