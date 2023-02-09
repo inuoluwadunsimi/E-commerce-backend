@@ -6,6 +6,7 @@ const session = require('express-session');
 const sessionStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const multer = require('multer')
 
 require('dotenv').config();
 
@@ -29,6 +30,7 @@ const authRoutes = require('./routes/auth');
 const User = require('./models/user');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({dest:'images'}).single('image'))
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   session({

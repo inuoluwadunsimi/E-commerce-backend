@@ -18,10 +18,11 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const image = req.body.image
+  const image = req.file;
   const price = req.body.price;
   const description = req.body.description;
   const errors = validationResult(req);
+  console.log(image);
 
   if (!errors.isEmpty()) {
     return res.status(422).render('admin/edit-product', {
@@ -70,9 +71,9 @@ exports.postAddProduct = (req, res, next) => {
       //   validationErrors: [],
       // });
       // res.redirect('/500');
-      const error = new Error(err)
-      error.httpStatusCode = 500
-      return next(error)
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -99,9 +100,9 @@ exports.getEditProduct = (req, res, next) => {
       });
     })
     .catch((err) => {
-      const error = new Error(err)
-      error.httpStatusCode = 500
-      return next(error)
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -131,23 +132,23 @@ exports.postEditProduct = (req, res, next) => {
     });
   }
 
-  Product.findById(prodId)
-    .then((product) => {
-      if (product.userId.toString() !== req.user._id.toString()) {
-        return res.redirect('/');
-      }
-      product.title = updatedTitle;
-      product.price = updatedPrice;
-      product.description = updatedDescription;
-      product.imageUrl = updatedImageUrl;
-      return product.save().then((result) => {
-        console.log('UPDATED PRODUCT!');
-        res.redirect('/admin/products');
-      });
-    })
-    const error = new Error(err)
-    error.httpStatusCode = 500
-    return next(error)};
+  Product.findById(prodId).then((product) => {
+    if (product.userId.toString() !== req.user._id.toString()) {
+      return res.redirect('/');
+    }
+    product.title = updatedTitle;
+    product.price = updatedPrice;
+    product.description = updatedDescription;
+    product.imageUrl = updatedImageUrl;
+    return product.save().then((result) => {
+      console.log('UPDATED PRODUCT!');
+      res.redirect('/admin/products');
+    });
+  });
+  const error = new Error(err);
+  error.httpStatusCode = 500;
+  return next(error);
+};
 
 exports.getAdminProducts = (req, res, next) => {
   Product.find({ userId: req.user._id })
@@ -173,7 +174,8 @@ exports.postDeleteProduct = (req, res, next) => {
       res.redirect('/admin/products');
     })
     .catch((err) => {
-      const error = new Error(err)
-      error.httpStatusCode = 500
-      return next(error)    });
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
