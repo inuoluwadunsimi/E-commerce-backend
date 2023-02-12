@@ -1,5 +1,7 @@
 const Order = require('../models/order');
 const Product = require('../models/product');
+const fs = require('fs');
+const path = require('path');
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -65,8 +67,6 @@ exports.getCart = (req, res, next) => {
         path: '/cart',
         pageTitle: 'Your Cart',
         products: products,
-        isAuthenticated: req.session.isLoggedIn,
-        csrfToken: req.csrfToken(),
       });
     })
     .catch((err) => {
@@ -85,6 +85,11 @@ exports.postCart = (req, res, next) => {
     .then((result) => {
       console.log(result);
       res.redirect('/cart');
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -118,8 +123,6 @@ exports.getOrders = (req, res, next) => {
         orders: orders,
         pageTitle: 'Orders',
         path: '/orders',
-        isAuthenticated: req.session.isLoggedIn,
-        csrfToken: req.csrfToken(),
       });
     })
     .catch((err) => {
@@ -132,8 +135,8 @@ exports.getOrders = (req, res, next) => {
 exports.postOrder = (req, res, next) => {
   req.user
     .populate('cart.items.productId')
+    .execPopulate()
     .then((user) => {
-      console.log(user.cart.items);
       const products = user.cart.items.map((i) => {
         return { quantity: i.quantity, product: { ...i.productId._doc } };
       });
@@ -147,7 +150,8 @@ exports.postOrder = (req, res, next) => {
       return order.save();
     })
     .then((result) => {
-      req.user.clearCart();
+      console.log(result);
+      return req.user.clearCart();
     })
     .then(() => {
       res.redirect('/orders');
@@ -157,4 +161,16 @@ exports.postOrder = (req, res, next) => {
       error.httpStatusCode = 500;
       return next(error);
     });
+};
+
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  const invoiceName = 'invoice -' + orderId + '.pdf';
+  const invoicePath = path.join('data', 'invoice', invoiceName);
+  fs.readFile(invoicePath, (err, data) => {
+    if (err) {
+      return next();
+    }
+    res.send(data);
+  });
 };
