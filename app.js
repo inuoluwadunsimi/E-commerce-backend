@@ -13,7 +13,6 @@ require('dotenv').config();
 const error = require('./controllers/error');
 const User = require('./models/user');
 
-
 const app = express();
 const store = new sessionStore({
   uri: process.env.MONGO_URI,
@@ -22,12 +21,14 @@ const store = new sessionStore({
 
 const csrfProtection = csrf();
 
+
+
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'images');
   },
   filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + '-' + file.originalname);
+    cb(null, Date.now() + '-' + file.originalname);
   },
 });
 
