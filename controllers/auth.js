@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const sendGrid = require('nodemailer-sendgrid-transport');
+// const sendGrid = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 require('dotenv').config();
@@ -25,7 +25,7 @@ exports.getLogin = (req, res, next) => {
   } else {
     message = null;
   }
-  console.log(req.session.isLoggedIn);
+  // console.log(req.session.isLoggedIn);
   res.render('auth/login', {
     pageTitle: 'Login',
     path: '/login',
