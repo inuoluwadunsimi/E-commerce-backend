@@ -133,17 +133,18 @@ exports.getOrders = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
+  console.log('Test this to see if it is working')
   req.user
     .populate('cart.items.productId')
-    .execPopulate()
     .then((user) => {
+      // console.log(user)
       const products = user.cart.items.map((i) => {
         return { quantity: i.quantity, product: { ...i.productId._doc } };
       });
       const order = new Order({
         user: {
           email: req.user.email,
-          userId: req.user,
+          userId: req.user._id,
         },
         products: products,
       });

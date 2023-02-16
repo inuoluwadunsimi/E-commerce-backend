@@ -109,9 +109,10 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect('mongodb+srv://Inuoluwadunsimi:Thesaneman12_@e-commerce.ad1ulnf.mongodb.net/shop')
   .then((result) => {
     app.listen(3000);
+    // console.log(result)
   })
   .catch((err) => {
     console.log(err);

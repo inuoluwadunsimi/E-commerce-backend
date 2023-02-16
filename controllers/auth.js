@@ -30,12 +30,11 @@ exports.getLogin = (req, res, next) => {
     pageTitle: 'Login',
     path: '/login',
     errorMessage: message,
-    oldInput:{
-      email:'',
-      password:'',
+    oldInput: {
+      email: '',
+      password: '',
     },
-    validationErrors:[]
-    
+    validationErrors: [],
   });
 };
 
@@ -49,15 +48,15 @@ exports.postLogin = (req, res, next) => {
       pageTitle: 'login',
       path: '/login',
       errorMessage: errors.array()[0].msg,
-      oldInput:{
-        email:email,
-        password:password,
+      oldInput: {
+        email: email,
+        password: password,
       },
-      validationErrors: errors.array()
+      validationErrors: errors.array(),
     });
   }
   User.findOne({ email: email })
-    .then(user => {
+    .then((user) => {
       if (!user) {
         return res.status(422).render('auth/login', {
           path: '/login',
@@ -65,9 +64,9 @@ exports.postLogin = (req, res, next) => {
           errorMessage: 'Invalid email or password.',
           oldInput: {
             email: email,
-            password: password
+            password: password,
           },
-          validationErrors: []
+          validationErrors: [],
         });
       }
       bcrypt
@@ -87,9 +86,9 @@ exports.postLogin = (req, res, next) => {
             errorMessage: 'Invalid email or password.',
             oldInput: {
               email: email,
-              password: password
+              password: password,
             },
-            validationErrors: []
+            validationErrors: [],
           });
         })
         .catch((err) => {
@@ -98,9 +97,9 @@ exports.postLogin = (req, res, next) => {
         });
     })
     .catch((err) => {
-      const error = new Error(err)
-      error.httpStatusCode = 500
-      return next(error)
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -127,7 +126,6 @@ exports.postSignup = (req, res, next) => {
         confirmPasword: req.body.confirmPasword,
       },
       validationErrors: errors.array(),
-
     });
   }
 
@@ -161,9 +159,10 @@ exports.postSignup = (req, res, next) => {
       });
     })
     .catch((err) => {
-      const error = new Error(err)
-      error.httpStatusCode = 500
-      return next(error)    });
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getSignup = (req, res, next) => {
@@ -182,7 +181,7 @@ exports.getSignup = (req, res, next) => {
       password: '',
       confirmPasword: '',
     },
-    validationErrors: []
+    validationErrors: [],
   });
 };
 
@@ -231,9 +230,10 @@ exports.postReset = (req, res, next) => {
         });
       })
       .catch((err) => {
-        const error = new Error(err)
-        error.httpStatusCode = 500
-        return next(error)      });
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+      });
   });
 };
 
@@ -259,9 +259,10 @@ exports.getNewPassword = (req, res, next) => {
       });
     })
     .catch((err) => {
-      const error = new Error(err)
-      error.httpStatusCode = 500
-      return next(error)    });
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postNewPassword = (req, res, next) => {
@@ -272,6 +273,8 @@ exports.postNewPassword = (req, res, next) => {
 
   User.findOne({
     resetToken: passwordToken,
+    // tokenExpiration: { $gt: Date.now() },
+
     // tokenExpiration: { $gt: tokenExpiration + 3600000 },
     _id: userId,
   })
@@ -296,7 +299,8 @@ exports.postNewPassword = (req, res, next) => {
       });
     })
     .catch((err) => {
-      const error = new Error(err)
-      error.httpStatusCode = 500
-      return next(error)    });
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };

@@ -4,11 +4,11 @@ const order = new mongoose.Schema({
   products: [
     {
       product: { type: Object, required: true },
-      quantity: { type: Number, equired: true },
+      quantity: { type: Number, required: true },
     },
   ],
   user: {
-    name: {
+    email: {
       type: String,
       required: true,
     },
@@ -18,6 +18,8 @@ const order = new mongoose.Schema({
       ref: 'User',
     },
   },
-});
+  
+  
+},{ timestamps: true });
 
 module.exports = mongoose.model('Order', order);
