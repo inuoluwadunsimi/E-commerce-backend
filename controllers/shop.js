@@ -133,11 +133,9 @@ exports.getOrders = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  console.log('Test this to see if it is working')
   req.user
     .populate('cart.items.productId')
     .then((user) => {
-      // console.log(user)
       const products = user.cart.items.map((i) => {
         return { quantity: i.quantity, product: { ...i.productId._doc } };
       });
@@ -151,7 +149,6 @@ exports.postOrder = (req, res, next) => {
       return order.save();
     })
     .then((result) => {
-      console.log(result);
       return req.user.clearCart();
     })
     .then(() => {
