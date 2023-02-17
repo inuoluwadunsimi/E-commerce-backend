@@ -21,14 +21,12 @@ const store = new sessionStore({
 
 const csrfProtection = csrf();
 
-
-
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'images');
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+    cb(null, new Date().toISOString() + '-' + file.originalname);
   },
 });
 
@@ -109,7 +107,9 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect('mongodb+srv://Inuoluwadunsimi:Thesaneman12_@e-commerce.ad1ulnf.mongodb.net/shop')
+  .connect(
+    'mongodb+srv://Inuoluwadunsimi:Thesaneman12_@e-commerce.ad1ulnf.mongodb.net/shop'
+  )
   .then((result) => {
     app.listen(3000);
     // console.log(result)
