@@ -172,25 +172,42 @@ exports.getInvoice = (req, res, next) => {
       if (order.user.userId.toString() !== req.user._id.toString()) {
         return next(new Error('Unauthorized'));
       }
+      const invoiceName = 'invoice-' + orderId + '.pdf';
+      const invoicePath = path.join('data', 'invoices', invoiceName);
+
+      const pdfDoc = new PDFDocument();
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader(
+        'Content-Disposition',
+        'inline;filename="' + invoiceName + '"'
+      );
+
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      pdfDoc.pipe(res);
+      pdfDoc.fontSize(26).text('Invoice', {
+        underline: true,
+      });
+      pdfDoc.text('-----------------------------');
+      let totalPrice = 0;
+      order.products.forEach((prod) => {
+        totalPrice  += prod.quantity * prod.product.price;
+        pdfDoc.fontSize(14).text(
+          prod.product.title +
+            '-' +
+            prod.quantity +
+            'x ' +
+            '$' +
+            prod.product.price
+        );
+      });
+      pdfDoc.text('---')
+      pdfDoc.text('Total price $' + totalPrice)
+      
+      pdfDoc.end();
     })
     .catch((err) => {
       return next(err);
     });
-  const invoiceName = 'invoice-' + orderId + '.pdf';
-  const invoicePath = path.join('data', 'invoices', invoiceName);
 
-  const pdfDoc = new PDFDocument();
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', 'inline;filename="' + invoiceName + '"');
-
-  pdfDoc.pipe(fs.createWriteStream(invoicePath));
-  pdfDoc.text('Hello Niggas');
   
-  pdfDoc.pipe(res); 
-
-
-  pdfDoc.end();
-
-  // const file = fs.createReadStream(invoicePath);
-  // file.pipe(res);
 };
