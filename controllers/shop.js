@@ -3,8 +3,24 @@ const Product = require('../models/product');
 const fs = require('fs');
 const path = require('path');
 const PDFDocument = require('pdfkit');
+require('dotenv').config();
+
 
 const ITEMS_PER_PAGE = 1;
+
+// const validation = (req, res, next) => {
+//   const page = +req.query.page || 1;
+
+//   let totalItems;
+//   return Product.find()
+//     .countDocuments()
+//     .then((productNo) => {
+//       totalItems = productNo;
+//       return Product.find()
+//         .skip((page - 1) * ITEMS_PER_PAGE)
+//         .limit(ITEMS_PER_PAGE);
+//     });
+// };
 
 exports.getProducts = (req, res, next) => {
   const page = +req.query.page || 1;
@@ -21,8 +37,8 @@ exports.getProducts = (req, res, next) => {
     .then((products) => {
       res.render('shop/product-list', {
         prods: products,
-        pageTitle: 'Shop',
-        path: '/products ',
+        pageTitle: 'products',
+        path: '/products',
         currentPage: page,
         hasNextPage: ITEMS_PER_PAGE * page < totalItems,
         hasPreviousPage: page > 1,
