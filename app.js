@@ -99,6 +99,7 @@ app.get('/500', error.get500);
 app.use(error.get404);
 
 app.use((error, req, res, next) => {
+  console.log(error)
   res.status(500).render('500', {
     pageTitle: 'Internal server error',
     path: '',
@@ -108,7 +109,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    'mongodb+srv://Inuoluwadunsimi:Thesaneman12_@e-commerce.ad1ulnf.mongodb.net/shop'
+    process.env.MONGO_URI
   )
   .then((result) => {
     app.listen(3000);
